@@ -86,6 +86,9 @@ export -f validate_product_type
 
 export GIT_REPO_HOME=$(pwd)
 
+log "printenv"
+printenv
+
 ## Configure CloudWatch agent
 if [[ $CLUSTER_TYPE == "aws" ]]; then
   log "Configuring CloudWatch logs agent"

@@ -328,7 +328,7 @@ fi
 
 ## Configure OCP cluster
 log "==== OCP cluster configuration (Cert Manager) started ===="
-cd /root/ansible-playbook/ibm/mas_devops/playbooks
+cd /root/ansible-devops/ibm/mas_devops/playbooks
 set +e
 
 if [[ $ROSA == "true" ]]; then
