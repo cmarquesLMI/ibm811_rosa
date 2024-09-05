@@ -525,5 +525,5 @@ if [[ $CLUSTER_TYPE == "aws" ]]; then
   aws s3 cp $GIT_REPO_HOME/mas-provisioning.log $DEPLOYMENT_CONTEXT_UPLOAD_PATH
 fi
 log "Shutting down VM in a minute"
-shutdown -P "+1"
+#shutdown -P "+1"
 exit $RESP_CODE
