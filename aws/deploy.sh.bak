@@ -349,9 +349,9 @@ if [[ $ROSA == "true" ]]; then
   	oc patch storageclass $CPD_PRIMARY_STORAGE_CLASS -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
 fi
 
-export ROLE_NAME=ibm_catalogs && ansible-playbook ibm.mas_devops.run_role
-export ROLE_NAME=common_services && ansible-playbook ibm.mas_devops.run_role
-export ROLE_NAME=cert_manager && ansible-playbook ibm.mas_devops.run_role
+export ROLE_NAME=ibm_catalogs && ansible-playbook run_role
+export ROLE_NAME=common_services && ansible-playbook run_role
+export ROLE_NAME=cert_manager && ansible-playbook run_role
 if [[ $? -ne 0 ]]; then
   # One reason for this failure is catalog sources not having required state information, so recreate the catalog-operator pod
   # https://bugzilla.redhat.com/show_bug.cgi?id=1807128
@@ -361,9 +361,9 @@ if [[ $? -ne 0 ]]; then
   oc delete pod $podname -n openshift-operator-lifecycle-manager
   sleep 10
   # Retry the step
-  export ROLE_NAME=ibm_catalogs && ansible-playbook ibm.mas_devops.run_role
-  export ROLE_NAME=common_services && ansible-playbook ibm.mas_devops.run_role
-  export ROLE_NAME=cert_manager && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=ibm_catalogs && ansible-playbook run_role
+  export ROLE_NAME=common_services && ansible-playbook run_role
+  export ROLE_NAME=cert_manager && ansible-playbook run_role
   retcode=$?
   if [[ $retcode -ne 0 ]]; then
     log "Failed while configuring OCP cluster"
@@ -428,7 +428,7 @@ if [[ $MONGO_USE_EXISTING_INSTANCE == "true" ]]; then
   export MONGODB_RETRY_WRITES=$SLS_MONGO_RETRYWRITES
   log " MONGODB_ADMIN_USERNAME=$MONGODB_ADMIN_USERNAME MONGODB_HOSTS=$MONGODB_HOSTS MONGODB_CA_PEM_LOCAL_FILE=${MONGODB_CA_PEM_LOCAL_FILE} MONGODB_RETRY_WRITES=$MONGODB_RETRY_WRITES"
   log "==== Existing MongoDB gencfg_mongo Started ===="
-  export ROLE_NAME=gencfg_mongo && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=gencfg_mongo && ansible-playbook run_role
   log "==== Existing MongoDB gencfg_mongo completed ===="
 else
   ## Deploy MongoDB started
@@ -507,7 +507,7 @@ else
     aws ec2 create-tags --resources $SUBNET_ID3  --tags Key=Name,Value=docdb-${RANDOM_STR}
     log "==== DocumentDB deployment started ==== @VPC_ID=${VPC_ID} ==== DOCDB_CLUSTER_NAME = ${DOCDB_CLUSTER_NAME}"
   fi
-  export ROLE_NAME=mongodb && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=mongodb && ansible-playbook run_role
   if [[ $MONGO_FLAVOR == "Amazon DocumentDB" && $MONGO_USE_EXISTING_INSTANCE == "false" ]]; then
     #Renaming subnet name tag to its original value, required in the create instance flow
     if [[ (-n $SUBNET_ID1) && (-n $SUBNET_ID2) && (-n $SUBNET_ID3) && (-n $TAG_NAME1) && (-n $TAG_NAME2) && (-n $TAG_NAME3) ]]; then
@@ -569,13 +569,13 @@ if [[ (-z $SLS_URL) || (-z $SLS_REGISTRATION_KEY) || (-z $SLS_PUB_CERT_URL) ]]; 
   fi
   log "SLS_MONGO_RETRYWRITES=$SLS_MONGO_RETRYWRITES"
   log "==== SLS deployment started ===="
-  export ROLE_NAME=sls && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=sls && ansible-playbook run_role
   log "==== SLS deployment completed ===="
 
 else
   log " SLS_MONGO_RETRYWRITES=$SLS_MONGO_RETRYWRITES "
   log "=== Using Existing SLS Deployment ==="
-  export ROLE_NAME=sls && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=sls && ansible-playbook run_role
   log "=== Generated SLS Config YAML ==="
 fi
 
@@ -583,25 +583,25 @@ fi
 if [[ (-z $DRO_API_KEY) || (-z $DRO_ENDPOINT_URL) || (-z $DRO_PUB_CERT_URL) ]]; then
   # Deploy DRO
   log "==== DRO deployment started ===="
-  export ROLE_NAME=dro && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=dro && ansible-playbook run_role
   log "==== DRO deployment completed ===="
 
 else
   log "=== Using Existing DRO Deployment ==="
-  export ROLE_NAME=dro && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=dro && ansible-playbook run_role
   log "=== Generated DRO Config YAML ==="
 fi
 
 ## Deploy CP4D
 if [[ $DEPLOY_CP4D == "true" ]]; then
   log "==== CP4D deployment started ===="
-  export ROLE_NAME=cp4d && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=cp4d && ansible-playbook run_role
   log "==== CP4D deployment completed ===="
 fi
 
 ## Create MAS Workspace
 log "==== MAS Workspace generation started ===="
-export ROLE_NAME=gencfg_workspace && ansible-playbook ibm.mas_devops.run_role
+export ROLE_NAME=gencfg_workspace && ansible-playbook run_role
 log "==== MAS Workspace generation completed ===="
 
 
@@ -634,27 +634,27 @@ if [[ $DEPLOY_MANAGE == "true" && (-n $MAS_JDBC_USER) && (-n $MAS_JDBC_PASSWORD)
     export SSL_ENABLED=true
   fi
   log "==== Configure JDBC started for external Oracle ==== SSL_ENABLED = $SSL_ENABLED"
-  export ROLE_NAME=gencfg_jdbc && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=gencfg_jdbc && ansible-playbook run_role
   log "==== Configure JDBC completed for external Oracle ===="
 fi
 
 ## Deploy MAS
 log "==== MAS deployment started ===="
-export ROLE_NAME=suite_install && ansible-playbook ibm.mas_devops.run_role
-export ROLE_NAME=suite_config && ansible-playbook ibm.mas_devops.run_role
-export ROLE_NAME=suite_verify && ansible-playbook ibm.mas_devops.run_role
+export ROLE_NAME=suite_install && ansible-playbook run_role
+export ROLE_NAME=suite_config && ansible-playbook run_role
+export ROLE_NAME=suite_verify && ansible-playbook run_role
 log "==== MAS deployment completed ===="
 
 ## Deploy Manage
 if [[ $DEPLOY_MANAGE == "true" ]]; then
   # Deploy Manage
   log "==== MAS Manage deployment started ===="
-  export ROLE_NAME=suite_app_install && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=suite_app_install && ansible-playbook run_role
   log "==== MAS Manage deployment completed ===="
 
   # Configure app to use the DB
   log "==== MAS Manage configure app started ===="
   export MAS_APPWS_BINDINGS_JDBC="workspace-application"
-  export ROLE_NAME=suite_app_config && ansible-playbook ibm.mas_devops.run_role
+  export ROLE_NAME=suite_app_config && ansible-playbook run_role
   log "==== MAS Manage configure app completed ===="
 fi
