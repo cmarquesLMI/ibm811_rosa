@@ -89,8 +89,7 @@ export GIT_REPO_HOME=$(pwd)
 log "printenv"
 printenv
 
-cd /root/ansible-devops
-ansible-galaxy collection install ibm.mas_devops
+pip install --upgrade ansible
 
 
 ## Configure CloudWatch agent

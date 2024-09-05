@@ -89,6 +89,10 @@ export GIT_REPO_HOME=$(pwd)
 log "printenv"
 printenv
 
+cd /root/ansible-devops
+ansible-galaxy collection install ibm.mas_devops
+
+
 ## Configure CloudWatch agent
 if [[ $CLUSTER_TYPE == "aws" ]]; then
   log "Configuring CloudWatch logs agent"
